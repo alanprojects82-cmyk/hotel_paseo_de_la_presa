@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Menu, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { Link, useLocation } from "react-router-dom";
 
 const links = [
   { href: "#inicio", label: "Inicio" },
@@ -12,55 +13,123 @@ const links = [
 
 const Navbar = () => {
   const [open, setOpen] = useState(false);
+  const location = useLocation();
+
+  const isHome = location.pathname === "/";
 
   const scrollTo = (href: string) => {
     setOpen(false);
-    document.querySelector(href)?.scrollIntoView({ behavior: "smooth" });
+
+    const element = document.querySelector(href);
+
+    if (element) {
+      element.scrollIntoView({
+        behavior: "smooth",
+      });
+    }
   };
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-background/90 backdrop-blur-md border-b border-border">
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-black/40 backdrop-blur-md border-b border-white/10">
       <div className="container mx-auto flex items-center justify-between py-4 px-4">
-        <button onClick={() => scrollTo("#inicio")} className="flex flex-col items-start leading-none">
-          <span className="font-heading text-xl font-bold tracking-wide text-foreground">Hotel Paseo de la Presa</span>
-          <span className="text-[10px] tracking-[0.3em] uppercase text-muted-foreground font-body">Guanajuato, México</span>
-        </button>
 
-        {/* Desktop */}
-        <div className="hidden md:flex items-center gap-8">
-          {links.map((l) => (
-            <button key={l.href} onClick={() => scrollTo(l.href)} className="text-sm font-body text-muted-foreground hover:text-primary transition-colors">
-              {l.label}
+        {/* LOGO */}
+        <Link
+          to="/"
+          className="flex flex-col items-start leading-none"
+        >
+          <span className="text-xl font-bold tracking-wide text-[#f5e6d3]">
+            Hotel Paseo de la Presa
+          </span>
+
+          <span className="text-[10px] uppercase tracking-[0.3em] text-[#e7d7c3]">
+            Guanajuato, México
+          </span>
+        </Link>
+
+        {/* DESKTOP */}
+        <div className="hidden md:flex items-center gap-6">
+
+          {/* BOTONES DE SCROLL */}
+          {isHome &&
+            links.map((l) => (
+              <button
+                key={l.href}
+                onClick={() => scrollTo(l.href)}
+                className="text-sm text-[#f5e6d3] hover:text-white transition-colors"
+              >
+                {l.label}
+              </button>
+            ))}
+
+          {/* BOTÓN RESERVAR */}
+          {isHome && (
+            <button
+              onClick={() => scrollTo("#reservar")}
+              className="px-4 py-2 rounded-lg bg-[#7a1f2b] text-white hover:opacity-90 transition shadow-lg"
+            >
+              Reservar Ahora
             </button>
-          ))}
-          <button onClick={() => scrollTo("#reservar")} className="bg-primary text-primary-foreground px-5 py-2 rounded-md text-sm font-medium hover:opacity-90 transition-opacity">
-            Reservar Ahora
-          </button>
+          )}
+
+          {/* BOTÓN DASHBOARD */}
+          <Link
+            to="/dashboard"
+            className="px-4 py-2 rounded-lg border border-[#e7d7c3]/40 bg-white/10 text-[#f5e6d3] hover:bg-white/20 transition shadow-lg"
+          >
+            Dashboards Ejecutivos
+          </Link>
         </div>
 
-        {/* Mobile toggle */}
-        <button className="md:hidden text-foreground" onClick={() => setOpen(!open)}>
+        {/* MOBILE TOGGLE */}
+        <button
+          className="md:hidden text-[#f5e6d3]"
+          onClick={() => setOpen(!open)}
+        >
           {open ? <X size={24} /> : <Menu size={24} />}
         </button>
       </div>
 
+      {/* MOBILE MENU */}
       <AnimatePresence>
         {open && (
           <motion.div
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            className="md:hidden overflow-hidden bg-background border-b border-border"
+            className="md:hidden overflow-hidden bg-[#2b0f14]/95 border-t border-white/10"
           >
             <div className="flex flex-col gap-4 p-6">
-              {links.map((l) => (
-                <button key={l.href} onClick={() => scrollTo(l.href)} className="text-left text-sm font-body text-muted-foreground hover:text-primary">
-                  {l.label}
+
+              {/* LINKS */}
+              {isHome &&
+                links.map((l) => (
+                  <button
+                    key={l.href}
+                    onClick={() => scrollTo(l.href)}
+                    className="text-left text-sm text-[#f5e6d3]"
+                  >
+                    {l.label}
+                  </button>
+                ))}
+
+              {/* RESERVAR */}
+              {isHome && (
+                <button
+                  onClick={() => scrollTo("#reservar")}
+                  className="px-4 py-2 rounded-lg bg-[#7a1f2b] text-white hover:opacity-90 transition"
+                >
+                  Reservar Ahora
                 </button>
-              ))}
-              <button onClick={() => scrollTo("#reservar")} className="bg-primary text-primary-foreground px-5 py-2 rounded-md text-sm font-medium mt-2">
-                Reservar Ahora
-              </button>
+              )}
+
+              {/* DASHBOARD */}
+              <Link
+                to="/dashboard"
+                className="px-4 py-2 rounded-lg border border-[#e7d7c3]/40 bg-white/10 text-[#f5e6d3] text-center hover:bg-white/20 transition"
+              >
+                Dashboards Ejecutivos
+              </Link>
             </div>
           </motion.div>
         )}
